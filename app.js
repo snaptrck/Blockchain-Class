@@ -1,23 +1,33 @@
-function splitAtX(string) {
-    // Find the index of the lowercase 'x'
-    const xIndex = string.indexOf('x');
+/*
+Lesson 1
+Your Goal: Find the Color
+Given a SHA256 hash, find the color input that would generate 
+that hash. You can assume that all the hashes be generated only 
+from colors provided in the COLORS array.
 
-    // Check if 'x' exists in the string
-    if (xIndex !== -1) {
-        // Split the string into two halves
-        const beforeX = string.slice(0, xIndex);
-        const afterX = string.slice(xIndex + 1);
+To take the hash of a color, first use utf8ToBytes to translate the string to bytes. Then, use sha256 to hash it.
+When you want to compare two hashes, first use toHex to turn each hash from a Uint8Array to a string of hexadecimal characters.
+*/
 
-        // Compare the lengths of the two halves
-        if (beforeX.length >= afterX.length) {
-            return beforeX; // Return the longer half or the first half if they are equal
-        } else {
-            return afterX; // Return the longer half
+const { sha256 } = require("ethereum-cryptography/sha256");
+const { toHex, utf8ToBytes } = require("ethereum-cryptography/utils");
+
+// the possible colors that the hash could represent
+const COLORS = ['red', 'green', 'blue', 'yellow', 'pink', 'orange'];
+
+// given a hash, return the color that created the hash
+function findColor(hash) {
+    for (let i = 0; i < COLORS.length; i++) {
+        let color = COLORS[i];
+        // translate string to bytes
+        let colorBytes = utf8ToBytes(color);
+        // hash string
+        let colorHash = sha256(colorBytes);
+        // compare hashes
+        if (toHex(hash) === toHex(colorHash)) {
+            return color;
         }
-    } else {
-        // If 'x' is not found, return the whole string
-        return string;
     }
 }
 
-module.exports = splitAtX;
+module.exports = findColor;
